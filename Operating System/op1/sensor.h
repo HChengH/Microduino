@@ -1,17 +1,21 @@
 #include <SoftwareSerial.h>
-#include <AM2321.h>
+#include <SHT2x.h>
 
 #define INTERVAL_pm25             200 
 unsigned long pm25_time = millis();
 
-SoftwareSerial pmSerial(4,5);   //PM2.5传感器通讯软串口
+SoftwareSerial pmSerial(12,13);   //PM2.5传感器通讯软串口
 
-AM2321 am2321;
 
-float sensor_tem,sensor_hum,sensor_light,
-Sensor_etoh;
+float sensor_tem,sensor_hum,sensor_mode;
 
 float sensorPM25;
+
+int fanSpeed;
+
+int mode;
+
+boolean modifyFan = false;
 
 
 float PM25() {
@@ -51,16 +55,11 @@ float PM25() {
 }
 
 
-void updateLight() {
-  sensor_light = map(analogRead(A0), 0, 1023, 0, 255);
-}
-
-void updateCH4() {
-  Sensor_etoh= map(analogRead(A2), 0, 1023, 0, 30);
+void updateMode(int mode) {
+  sensor_mode = mode;
 }
 
 void updateTempHumi() {
-  am2321.read();
-  sensor_tem = am2321.temperature / 10.0;
-  sensor_hum = am2321.humidity / 10.0;
+  sensor_tem = SHT2x.GetTemperature();
+  sensor_hum = SHT2x.GetHumidity();
 }
